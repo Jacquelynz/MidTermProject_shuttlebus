@@ -9,11 +9,12 @@ public class SchoolBus : MonoBehaviour
 {
     public int RandomNumber;
     private Rigidbody NYUBus;
-    public bool IsComing, IsLosing, StartRandom,Success;
+    public bool IsComing, IsLosing, StartRandom,Success, Arrived;
     public float Timer;
-    public Collider Door;
+    //public Collider Door;
     public GameObject panel;
     public TMPro.TMP_Text NoteText;
+    public GameObject Door;
 
     void Start()
     {
@@ -26,6 +27,31 @@ public class SchoolBus : MonoBehaviour
 
     void Update()
     {
+        Ray ray = new Ray(Door.transform.position, -transform.right);
+
+        float rayDist = 4f;
+        
+        Debug.DrawRay(ray.origin ,ray.direction *rayDist, Color.yellow);
+        
+        RaycastHit DoorRaycastHit = new RaycastHit();
+        
+
+        if (Physics.Raycast(ray, out DoorRaycastHit, rayDist))
+        {
+            if (DoorRaycastHit.transform.gameObject.name == "BusStop")
+            {
+                IsComing = false;            
+                StartCoroutine(timer());
+                Arrived = true;
+            } else if (DoorRaycastHit.transform.gameObject.name == "Player"& Arrived)
+            {
+                Success = true;                                             
+                panel.SetActive(true);                                      
+                NoteText.text = "You successfully catch the shuttle bus!";  
+            }
+        }
+        
+        //Random a chance for school bus to come
         if (StartRandom)
         {
             RandomNumber = Random.Range(0, 10);
@@ -60,23 +86,27 @@ public class SchoolBus : MonoBehaviour
             NYUBus.AddForce(0, 0, -1, ForceMode.Impulse);
         }
     }
-
-    private void OnCollisionEnter(Collision other)
+    
+    IEnumerator timer()
     {
-        if (other.gameObject.name == "BusStop")
+        yield return new WaitForSeconds(5f);
+        
+        IsComing = true;
+        if (Success == false)
         {
-            IsComing = false;  
-            Door.isTrigger = true;
+            IsLosing = true;
         }
+       
     }
+}
 
-    private void OnTriggerStay(Collider other)
+    /*    private void OnTriggerStay(Collider other)
     {
         if (other.gameObject.name == "BusStop")
         {
             IsComing = false;
             StartCoroutine(timer());
-            /*
+            
             Timer += Time.deltaTime;
             if (Timer >= 5f)
             {
@@ -84,7 +114,7 @@ public class SchoolBus : MonoBehaviour
                 IsComing = true;
                 Timer = 0f;
                 IsLosing = true;
-            } */
+            } 
         }
 
         if (other.gameObject.name == "Player")
@@ -93,22 +123,11 @@ public class SchoolBus : MonoBehaviour
             panel.SetActive(true);
             NoteText.text = "You successfully catch the shuttle bus!";
         }
-    }
+    }*/  
+
 
     
     
-    IEnumerator timer()
-    {
-        yield return new WaitForSeconds(5f);
-        
-        IsComing = true;
-        //Timer = 0f;
-        if (Success == false)
-        {
-            IsLosing = true;
-        }
-       
-    }
-}
+    
 
 
