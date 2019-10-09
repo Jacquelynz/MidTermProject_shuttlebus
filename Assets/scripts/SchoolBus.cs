@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 using UnityEngine;
-using UnityEngine.Experimental.UIElements;
+//using UnityEngine.Experimental.UIElements;
 using UnityEngine.UI;
 
 public class SchoolBus : MonoBehaviour
@@ -15,6 +15,7 @@ public class SchoolBus : MonoBehaviour
     public GameObject panel;
     public TMPro.TMP_Text NoteText;
     public GameObject Door;
+    public float RandomTimer;
 
     void Start()
     {
@@ -27,7 +28,7 @@ public class SchoolBus : MonoBehaviour
 
     void Update()
     {
-        Ray ray = new Ray(Door.transform.position, -transform.right);
+        Ray ray = new Ray(Door.transform.position, transform.forward);
 
         float rayDist = 4f;
         
@@ -43,8 +44,10 @@ public class SchoolBus : MonoBehaviour
                 IsComing = false;            
                 StartCoroutine(timer());
                 Arrived = true;
+                
             } else if (DoorRaycastHit.transform.gameObject.name == "Player"& Arrived)
             {
+                Door.transform.Translate(0f,0f,2f);
                 Success = true;                                             
                 panel.SetActive(true);                                      
                 NoteText.text = "You successfully catch the shuttle bus!";  
@@ -54,7 +57,11 @@ public class SchoolBus : MonoBehaviour
         //Random a chance for school bus to come
         if (StartRandom)
         {
-            RandomNumber = Random.Range(0, 10);
+            RandomTimer += Time.deltaTime;
+            //if (RandomNumber / 5 == 0)
+            //{
+                RandomNumber = Random.Range(0, 10);
+            //}
         }
 
         
@@ -89,7 +96,7 @@ public class SchoolBus : MonoBehaviour
     
     IEnumerator timer()
     {
-        yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(30f);
         
         IsComing = true;
         if (Success == false)

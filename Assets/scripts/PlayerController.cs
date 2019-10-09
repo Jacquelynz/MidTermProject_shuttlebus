@@ -8,7 +8,7 @@ public class PlayerController : MonoBehaviour
 
     private Vector3 myInput;
 
-    private bool grounded;
+    public bool grounded;
     // Start is called before the first frame update
     void Start()
     {
@@ -18,9 +18,28 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //raycast to detect if player is grounded
+        Ray ray = new Ray(transform.position, Vector3.down);
+
+        float rayDist = 1.2f;
+
+        Debug.DrawRay(ray.origin, ray.direction * rayDist, Color.green);
+        
+        //RaycastHit groundhit = new RaycastHit();
+
+        if (Physics.Raycast(ray, rayDist))
+        {
+            grounded = true;
+            
+        } else
+        {
+            grounded = false;
+        }
+        
+        
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
-        Vector3 jump = new Vector3(0f, 2f, 0f);
+        Vector3 jump = new Vector3(0f, 0.5f, 0f);
     
 
         myInput = horizontal * transform.right;
@@ -36,28 +55,7 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (grounded)
-        {
-            PlayerRB.velocity = myInput * 5f;
-        }
-        
-        
-        
-    }
-
-    private void OnCollisionEnter(Collision other)
-    {
-        if (other.gameObject.tag == "ground")
-        {
-            grounded = true;
-        }
-    }
-
-    private void OnCollisionExit(Collision other)
-    {
-        if (other.gameObject.tag == "ground")
-        {
-            grounded = false;
-        }
+        myInput.y = PlayerRB.velocity.y/5;
+        PlayerRB.velocity = myInput * 5f;
     }
 }
