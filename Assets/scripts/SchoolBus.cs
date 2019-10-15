@@ -21,18 +21,25 @@ public class SchoolBus : MonoBehaviour
     void Start()
     {
         NYUBus = GetComponent<Rigidbody>();
-        panel.SetActive(false);
-        NoteText.text = "";
+        panel.SetActive(true);
+        NoteText.text = "You have 30 minutes to get to Washington Square Park Campus from Metrotech!";
         StartRandom = true;
     }
+    
+    
 
 
     void Update()
     {
+        if (Input.GetMouseButtonDown(0))
+        {
+            NoteText.text = "";
+            panel.SetActive(false);
+        }
       
         Ray ray = new Ray(Door.transform.position, transform.forward);
 
-        float rayDist = 6f;
+        float rayDist = 8f;
         
         Debug.DrawRay(ray.origin ,ray.direction *rayDist, Color.yellow);
         
