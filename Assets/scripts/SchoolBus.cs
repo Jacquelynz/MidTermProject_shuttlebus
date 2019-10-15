@@ -9,13 +9,14 @@ public class SchoolBus : MonoBehaviour
 {
     public int RandomNumber;
     private Rigidbody NYUBus;
-    public bool IsComing, IsLosing, StartRandom,Success, Arrived;
+    public bool IsComing, IsLosing, StartRandom,Success, Arrived, OnTheWay5min,SC;
     public float Timer;
-    //public Collider Door;
+    
     public GameObject panel;
     public TMPro.TMP_Text NoteText;
     public GameObject Door;
     public float RandomTimer;
+    
 
     void Start()
     {
@@ -28,49 +29,59 @@ public class SchoolBus : MonoBehaviour
 
     void Update()
     {
+      
         Ray ray = new Ray(Door.transform.position, transform.forward);
 
-        float rayDist = 4f;
+        float rayDist = 6f;
         
         Debug.DrawRay(ray.origin ,ray.direction *rayDist, Color.yellow);
         
         RaycastHit DoorRaycastHit = new RaycastHit();
         
-
         if (Physics.Raycast(ray, out DoorRaycastHit, rayDist))
         {
             if (DoorRaycastHit.transform.gameObject.name == "BusStop")
             {
                 IsComing = false;            
-                StartCoroutine(timer());
+                StartCoroutine(timer(20f));
                 Arrived = true;
                 
             } else if (DoorRaycastHit.transform.gameObject.name == "Player"& Arrived)
             {
                 Door.transform.Translate(0f,0f,2f);
-                Success = true;                                             
+                Success = true;
+                IsLosing = false;
                 panel.SetActive(true);                                      
                 NoteText.text = "You successfully catch the shuttle bus!";  
+                
             }
         }
         
         //Random a chance for school bus to come
         if (StartRandom)
         {
-            RandomTimer += Time.deltaTime;
-            //if (RandomNumber / 5 == 0)
-            //{
-                RandomNumber = Random.Range(0, 10);
-            //}
+           // StartCoroutine(timer2(5f));
+           RandomTimer += Time.deltaTime;
+           if (RandomTimer >=2)
+           {
+               RandomNumber = Random.Range(0, 10);
+               RandomTimer = 0;
+           }
         }
 
         
         if (RandomNumber == 1)
         {
-            IsComing = true;
+            StartCoroutine(timer2(10f));
+            //IsComing = true;
+            OnTheWay5min = true;
             RandomNumber = 0;
             StartRandom = false;
         }
+
+        
+
+        
 
         //check if losing
         if (IsLosing)
@@ -81,7 +92,7 @@ public class SchoolBus : MonoBehaviour
                 Debug.Log("You Miss Today's Shuttle Bus");
                 panel.SetActive(true);
                 NoteText.text = "You Miss Today's Shuttle Bus!";
-                
+                Time.timeScale = 0f;
             }
         }
     }
@@ -94,10 +105,10 @@ public class SchoolBus : MonoBehaviour
         }
     }
     
-    IEnumerator timer()
+    IEnumerator timer(float seconds)
     {
-        yield return new WaitForSeconds(30f);
-        
+        yield return new WaitForSeconds(seconds);
+       
         IsComing = true;
         if (Success == false)
         {
@@ -105,32 +116,14 @@ public class SchoolBus : MonoBehaviour
         }
        
     }
+    IEnumerator timer2(float seconds)
+    {
+        yield return new WaitForSeconds(seconds);
+        IsComing = true;
+    }
 }
 
-    /*    private void OnTriggerStay(Collider other)
-    {
-        if (other.gameObject.name == "BusStop")
-        {
-            IsComing = false;
-            StartCoroutine(timer());
-            
-            Timer += Time.deltaTime;
-            if (Timer >= 5f)
-            {
-                Door.isTrigger = true;
-                IsComing = true;
-                Timer = 0f;
-                IsLosing = true;
-            } 
-        }
-
-        if (other.gameObject.name == "Player")
-        {
-            Success = true;
-            panel.SetActive(true);
-            NoteText.text = "You successfully catch the shuttle bus!";
-        }
-    }*/  
+  
 
 
     
