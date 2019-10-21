@@ -5,6 +5,10 @@ TagManager:
   serializedVersion: 2
   tags:
   - ground
+  - doorman
+  - wall
+  - normalbus
+  - RedSofa
   layers:
   - Default
   - TransparentFX

@@ -1,7 +1,9 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class NormalBusMove : MonoBehaviour
 {
@@ -9,6 +11,8 @@ public class NormalBusMove : MonoBehaviour
     public Rigidbody Bus;
     public bool isComing,Arrived;
     public TMPro.TMP_Text NoteText;
+
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -23,12 +27,12 @@ public class NormalBusMove : MonoBehaviour
         
         if (isComing)
         {
-            Bus.AddForce(0, 0, -1, ForceMode.Impulse);
+            Bus.AddForce(0, 0, Random.Range(-10,-40), ForceMode.Impulse);
         }
         
         Ray ray = new Ray(Door.transform.position, transform.forward);
 
-        float rayDist = 4f;
+        float rayDist = 8f;
         
         Debug.DrawRay(ray.origin ,ray.direction *rayDist, Color.yellow);
         
@@ -39,16 +43,33 @@ public class NormalBusMove : MonoBehaviour
         {
             if (DoorRaycastHit.transform.gameObject.name == "BusStop")
             {
+                if(!GameObject.Find("bus2").GetComponent<SchoolBus>().CarArriving.isPlaying)
+                    GameObject.Find("bus2").GetComponent<SchoolBus>().CarArriving.Play();
+                
                 isComing = false;
                 Arrived = true;
-                
-            } else if (DoorRaycastHit.transform.gameObject.name == "Player"& Arrived)
-            {
+                StartCoroutine(timer());
                 Door.transform.Translate(0f,0f,2f);
-                NoteText.text = "You entered the fake bus haha";
-                Time.timeScale = 0f;
-
-            }
+            } 
         }
+
+        
+        
+    }
+
+    private void OnCollisionEnter(Collision other)
+    {
+        if (other.gameObject.tag == "wall")
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    
+
+    IEnumerator timer()
+    {
+        yield return new WaitForSeconds(20);
+        isComing = true;
     }
 }

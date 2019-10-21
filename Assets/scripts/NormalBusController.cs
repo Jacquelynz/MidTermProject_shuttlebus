@@ -20,12 +20,10 @@ public class NormalBusController : MonoBehaviour
     {
         
         Timer += Time.deltaTime;
-        if (Timer >= 20f)
+        if (Timer >= 60f && !GameObject.Find("bus2").GetComponent<SchoolBus>().OnTheWay5min)
         {
             Instantiate(NormalBus);
             Timer = 0f;
         }
-
-       
     }
 }
